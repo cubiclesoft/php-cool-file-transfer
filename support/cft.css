@@ -1,0 +1,26 @@
+.cft_hidden { display: none; }
+
+.cft_notifications_wrap { position: fixed; width: 400px; bottom: 0; right: 0; z-index: 5000; overflow: hidden; }
+.cft_notifications { position: relative; }
+.cft_notifications .cft_user_request { overflow: hidden; margin: 1em; border: 1px solid #157EFB; border-radius: 5px; background-color: #FFFFFF; color: #333333; box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.15); }
+.cft_notifications .cft_user_request .cft_user_name_wrap { padding: 0.5em 0.7em; background-color: #157EFB; color: #FFFFFF; font-size: 0.85em; font-weight: bold; }
+.cft_notifications .cft_user_request .cft_user_name { overflow: hidden; }
+.cft_notifications .cft_user_request .cft_user_send_message { padding: 0.5em 0.7em 0; font-size: 0.85em; }
+.cft_notifications .cft_user_request .cft_files { padding: 0 0.7em 0.5em; font-size: 0.85em; }
+.cft_notifications .cft_user_request .cft_files .cft_file { margin-top: 1.0em; }
+.cft_notifications .cft_user_request .cft_files .cft_file_controls { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cft_notifications .cft_user_request .cft_files .cft_file_controls a.cft_file_remove { display: inline-block; margin-right: 0.3em; color: #A94442 !important; font-weight: bold; text-decoration: none !important; }
+.cft_notifications .cft_user_request .cft_files .cft_file_controls a.cft_file_remove:hover { color: #DC423F !important; }
+.cft_notifications .cft_user_request .cft_files .cft_file_info { white-space: nowrap; color: #666666; }
+
+@media (max-width: 675px) {
+	.cft_notifications_wrap { width: 300px; }
+}
+
+@media (max-width: 500px) {
+	.cft_notifications_wrap { left: 0; right: auto; }
+}
+
+@media (max-width: 320px) {
+	.cft_notifications_wrap { width: 250px; left: 0; right: auto; }
+}
