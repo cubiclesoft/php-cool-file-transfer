@@ -149,7 +149,7 @@ The sending side attempts to self-regulate its speed to a bitrate of 1.25 second
 Fun Facts
 ---------
 
-This product uses a LOT of existing CubicleSoft software (Admin Pack, FlexForms, FlexForms Modules, CSDB, jQuery Fancy File Uploader, and some previously unpublished code).  Completing the entire project in one weekend would not have been feasible without the existing technology stack.
+This product uses a LOT of existing CubicleSoft software (FlexForms, FlexForms Modules, CSDB, jQuery Fancy File Uploader, and some previously unpublished code).  Completing the entire project in one weekend would not have been feasible without the existing technology stack.
 
 You read that right:  This entire project was produced in just one weekend.  Fully releasing everything to the Interwebs took another day though, but only because making a video to showcase a project takes time.
 
