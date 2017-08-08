@@ -73,9 +73,9 @@ Once Cool File Transfer is installed, secure the installation path and then star
 
 <link rel="stylesheet" href="/cool-file-transfer/support/fancy-file-uploader/fancy_fileupload.css" type="text/css" media="all" />
 <script type="text/javascript" src="/cool-file-transfer/support/fancy-file-uploader/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="/cool-file-transfer/test/support/fancy-file-uploader/jquery.fileupload.js"></script>
-<script type="text/javascript" src="/cool-file-transfer/test/support/fancy-file-uploader/jquery.iframe-transport.js"></script>
-<script type="text/javascript" src="/cool-file-transfer/test/support/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
+<script type="text/javascript" src="/cool-file-transfer/support/fancy-file-uploader/jquery.fileupload.js"></script>
+<script type="text/javascript" src="/cool-file-transfer/support/fancy-file-uploader/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="/cool-file-transfer/support/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
 
 <script type="text/javascript" src="<?php echo $cft->GetDefaultJS(); ?>"></script>
 
