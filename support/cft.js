@@ -55,7 +55,7 @@ window.CoolFileTransfer = window.CoolFileTransfer || {
 			if (typeof(result.error) !== 'string')  result.error = CoolFileTransfer.Translate('The server indicated that the upload was not able to be started.  No additional information is available.');
 			if (typeof(result.errorcode) !== 'string')  result.errorcode = 'server_response';
 
-			data.ff_info.errors.push(CoolFileTransfer.FormatStr(CoolFileTransfer.Translate('The upload failed.  {0} ({1})'), CoolFileTransfer.EscapeHTML(data.result.error), CoolFileTransfer.EscapeHTML(data.result.errorcode)));
+			data.ff_info.errors.push(CoolFileTransfer.FormatStr(CoolFileTransfer.Translate('The upload failed.  {0} ({1})'), CoolFileTransfer.EscapeHTML(result.error), CoolFileTransfer.EscapeHTML(result.errorcode)));
 
 			this.find('.ff_fileupload_errors').html(data.ff_info.errors.join('<br>')).removeClass('ff_fileupload_hidden');
 
