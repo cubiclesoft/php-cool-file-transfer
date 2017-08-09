@@ -30,7 +30,7 @@ Getting Started
 
 Put the contents of this repository on a web server running PHP.  Then run the `install.php` file using your web browser.  SQLite is a great starting database that sets up quickly but MySQL and Postgres are supported too.  Assuming you have a decent setup, the installer takes only a couple of minutes.
 
-Once Cool File Transfer is installed, secure the installation path and then start using it.  A nifty class that is creatively called `CoolFileTransfer` is inside `cft.php`.  It's designed to be an intermediate, isolated layer between the configuration (`config.php`), the database, and an application (or API).  Also included with Cool File Transfer is [jQuery Fancy File Uploader](https://github.com/cubiclesoft/jquery-fancyfileuploader).  Let's use these two classes to display a file transfer dropzone:
+Once Cool File Transfer is installed, secure the installation path and then start using it.  A nifty class that is creatively called `CoolFileTransfer` is inside `cft.php`.  It's designed to be an intermediate, isolated layer between the configuration (config.php), the database, and an application (or API).  Also included with Cool File Transfer is [jQuery Fancy File Uploader](https://github.com/cubiclesoft/jquery-fancyfileuploader).  Let's use the `CoolFileTransfer` class to display a file transfer dropzone:
 
 ```php
 <?php
@@ -158,6 +158,7 @@ Admin Pack/FlexForms Integration
 
 If you use [Admin Pack](https://github.com/cubiclesoft/admin-pack-with-extras), then you can integrate the first half like this:
 
+```php
 <?php
 	require_once "/var/www/cool-file-transfer/cft.php";
 
@@ -236,6 +237,7 @@ For [FlexForms Extras](https://github.com/cubiclesoft/php-flexforms-extras), the
 To implement the second half in Admin Pack, abusing FlexForms CSS dependency injection via `BB_InjectLayoutHead()` is the easiest way to get Cool File Transfer notifications to appear regardless of where the user is located in the application:
 
 ```php
+<?php
 	function BB_InjectLayoutHead()
 	{
 		global $cft, $srcuser, $bb_flexforms;
