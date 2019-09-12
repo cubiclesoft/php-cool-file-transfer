@@ -4,7 +4,7 @@
 
 	class FlexForms
 	{
-		protected $state, $secretkey, $extrainfo, $autononce;
+		protected $state, $secretkey, $extrainfo, $autononce, $version;
 		protected static $requesthostcache, $formhandlers;
 
 		public function __construct()
@@ -31,6 +31,7 @@
 			$this->secretkey = false;
 			$this->extrainfo = "";
 			$this->autononce = false;
+			$this->version = "";
 		}
 
 		public function GetState()
@@ -75,6 +76,11 @@
 		public function SetCSSOutput($name)
 		{
 			$this->state["cssoutput"][$name] = true;
+		}
+
+		public function SetVersion($newversion)
+		{
+			$this->version = urlencode((string)$newversion);
 		}
 
 		public function SetSecretKey($secretkey)
@@ -139,7 +145,7 @@
 				else
 				{
 ?>
-	<link rel="stylesheet" href="<?php echo htmlspecialchars($this->state["supporturl"] . "/flex_forms.css"); ?>" type="text/css" media="all" />
+	<link rel="stylesheet" href="<?php echo htmlspecialchars($this->state["supporturl"] . "/flex_forms.css" . ($this->version !== "" ? (strpos($info["src"], "?") === false ? "?" : "&") . $this->version : "")); ?>" type="text/css" media="all" />
 <?php
 
 					$this->state["cssoutput"]["formcss"] = true;
@@ -398,7 +404,7 @@
 				$this->state["formnum"]++;
 				$this->state["formid"] = $this->state["formidbase"] . $this->state["formnum"];
 ?>
-		<form id="<?php echo $this->state["formid"]; ?>"<?php if (isset($options["formmode"]) && $options["formmode"] === "get")  { ?> method="get"<?php } else { ?> method="post" enctype="multipart/form-data"<?php } ?> action="<?php echo htmlspecialchars($this->state["action"]); ?>">
+		<form class="ff_form" id="<?php echo $this->state["formid"]; ?>"<?php if (isset($options["formmode"]) && $options["formmode"] === "get")  { ?> method="get"<?php } else { ?> method="post" enctype="multipart/form-data"<?php } ?> action="<?php echo htmlspecialchars($this->state["action"]); ?>">
 <?php
 
 				$extra = array();
@@ -496,7 +502,7 @@
 
 		public static function IsSSLRequest()
 		{
-			return ((isset($_SERVER["HTTPS"]) && ($_SERVER["HTTPS"] == "on" || $_SERVER["HTTPS"] == "1")) || (isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] == "443") || (str_replace("\\", "/", strtolower(substr($_SERVER["REQUEST_URI"], 0, 8))) == "https://"));
+			return ((isset($_SERVER["HTTPS"]) && ($_SERVER["HTTPS"] == "on" || $_SERVER["HTTPS"] == "1")) || (isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] == "443") || (isset($_SERVER["REQUEST_URI"]) && str_replace("\\", "/", strtolower(substr($_SERVER["REQUEST_URI"], 0, 8))) == "https://"));
 		}
 
 		// Returns 'http[s]://www.something.com[:port]' based on the current page request.
@@ -513,7 +519,7 @@
 
 			$url = "http" . ($ssl ? "s" : "") . "://";
 
-			$str = str_replace("\\", "/", $_SERVER["REQUEST_URI"]);
+			$str = (isset($_SERVER["REQUEST_URI"]) ? str_replace("\\", "/", $_SERVER["REQUEST_URI"]) : "/");
 			$pos = strpos($str, "?");
 			if ($pos !== false)  $str = substr($str, 0, $pos);
 			$str2 = strtolower($str);
@@ -555,11 +561,10 @@
 
 		public static function GetRequestURLBase()
 		{
-			$str = str_replace("\\", "/", $_SERVER["REQUEST_URI"]);
+			$str = (isset($_SERVER["REQUEST_URI"]) ? str_replace("\\", "/", $_SERVER["REQUEST_URI"]) : "/");
 			$pos = strpos($str, "?");
 			if ($pos !== false)  $str = substr($str, 0, $pos);
-			$str2 = strtolower($str);
-			if (substr($str2, 0, 7) == "http://" || substr($str2, 0, 8) == "https://")
+			if (strncasecmp($str, "http://", 7) == 0 || strncasecmp($str, "https://", 8) == 0)
 			{
 				$pos = strpos($str, "/", 8);
 				if ($pos === false)  $str = "/";
@@ -623,7 +628,7 @@
 						$this->state["insiderow"] = true;
 						$this->state["insiderowwidth"] = false;
 ?>
-			<div class="fieldtablewrap<?php if ($this->state["firstitem"])  echo " firstitem"; ?>"><table class="rowwrap"><tr>
+			<div class="fieldtablewrap<?php if ($this->state["firstitem"])  echo " firstitem"; ?>"><table class="rowwrap"><tbody><tr>
 <?php
 						$this->state["firstitem"] = false;
 					}
@@ -633,7 +638,7 @@
 					if ($this->state["responsive"] && $this->state["insiderowwidth"])  echo "<td></td>";
 
 ?>
-			</tr></table></div>
+			</tr></tbody></table></div>
 <?php
 					$this->state["insiderow"] = false;
 				}
@@ -738,7 +743,7 @@
 					{
 ?>
 			<div class="formitemdata">
-				<div class="textitemwrap"><input class="text"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\""; ?> type="text" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" value="<?php echo htmlspecialchars($field["value"]); ?>"<?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> /></div>
+				<div class="textitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\""; ?>><input class="text" type="text" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" value="<?php echo htmlspecialchars($field["value"]); ?>"<?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> /></div>
 			</div>
 <?php
 						break;
@@ -747,7 +752,7 @@
 					{
 ?>
 			<div class="formitemdata">
-				<div class="textitemwrap"><input class="text"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\""; ?> type="password" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" value="<?php echo htmlspecialchars($field["value"]); ?>"<?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> /></div>
+				<div class="textitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\""; ?>><input class="text" type="password" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" value="<?php echo htmlspecialchars($field["value"]); ?>"<?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> /></div>
 			</div>
 <?php
 						break;
@@ -756,7 +761,7 @@
 					{
 ?>
 			<div class="formitemdata">
-				<div class="checkboxitemwrap">
+				<div class="checkboxitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\""; ?>>
 					<input class="checkbox" type="checkbox" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" value="<?php echo htmlspecialchars($field["value"]); ?>"<?php if (isset($field["check"]) && $field["check"])  echo " checked"; ?><?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> />
 					<label for="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars(self::FFTranslate($field["display"])); ?></label>
 				</div>
@@ -770,14 +775,11 @@
 						else if (!isset($field["mode"]) || ($field["mode"] != "formhandler" && $field["mode"] != "select"))  $mode = "checkbox";
 						else  $mode = $field["mode"];
 
-						if (!isset($field["width"]) && !isset($field["height"]))  $style = "";
-						else
-						{
-							$style = array();
-							if (isset($field["width"]))  $style[] = ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]);
-							if (isset($field["height"]) && isset($field["multiple"]) && $field["multiple"] === true)  $style[] = "height: " . htmlspecialchars($field["height"]);
-							$style = " style=\"" . implode("; ", $style) . ";\"";
-						}
+						if (isset($field["width"]))  $stylewidth = " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\"";
+						else  $stylewidth = "";
+
+						if (isset($field["height"]) && isset($field["multiple"]) && $field["multiple"] === true)  $styleheight = " style=\"height: " . htmlspecialchars($field["height"]) . ";\"";
+						else  $styleheight = "";
 
 						if (!isset($field["select"]))  $field["select"] = array();
 						else if (is_string($field["select"]))  $field["select"] = array($field["select"] => true);
@@ -798,7 +800,7 @@
 									{
 										$id2 = $idbase . ($idnum ? "_" . $idnum : "");
 ?>
-				<div class="<?=$mode?>itemwrap">
+				<div class="<?=$mode?>itemwrap"<?php echo $stylewidth; ?>>
 					<input class="<?=$mode?>" type="<?=$mode?>" id="<?php echo $id2; ?>" name="<?php echo htmlspecialchars($field["name"]); ?><?php if ($mode == "checkbox")  echo "[]"; ?>" value="<?php echo htmlspecialchars($name2); ?>"<?php if (isset($field["select"][$name2]))  echo " checked"; ?><?php if ($this->state["autofocused"] === $id)  { echo " autofocus";  $this->state["autofocused"] = true; } ?> />
 					<label for="<?php echo $id2; ?>"><?php echo htmlspecialchars(self::FFTranslate($name)); ?> - <?php echo ($value2 == "" ? "&nbsp;" : htmlspecialchars(self::FFTranslate($value2))); ?></label>
 				</div>
@@ -810,7 +812,7 @@
 								{
 									$id2 = $idbase . ($idnum ? "_" . $idnum : "");
 ?>
-				<div class="<?=$mode?>itemwrap">
+				<div class="<?=$mode?>itemwrap"<?php echo $stylewidth; ?>>
 					<input class="<?=$mode?>" type="<?=$mode?>" id="<?php echo $id2; ?>" name="<?php echo htmlspecialchars($field["name"]); ?><?php if ($mode == "checkbox")  echo "[]"; ?>" value="<?php echo htmlspecialchars($name); ?>"<?php if (isset($field["select"][$name]))  echo " checked"; ?><?php if ($this->state["autofocused"] === $id)  { echo " autofocus";  $this->state["autofocused"] = true; } ?> />
 					<label for="<?php echo $id2; ?>"><?php echo ($value == "" ? "&nbsp;" : htmlspecialchars(self::FFTranslate($value))); ?></label>
 				</div>
@@ -822,8 +824,8 @@
 						else
 						{
 ?>
-				<div class="selectitemwrap">
-					<select class="<?php echo (isset($field["multiple"]) && $field["multiple"] === true ? "multi" : "single"); ?>" id="<?php echo $idbase; ?>" name="<?php echo htmlspecialchars($field["name"]) . (isset($field["multiple"]) && $field["multiple"] === true ? "[]" : ""); ?>"<?php if (isset($field["multiple"]) && $field["multiple"] === true)  echo " multiple"; ?><?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?><?php echo $style; ?>>
+				<div class="selectitemwrap"<?php echo $stylewidth; ?>>
+					<select class="<?php echo (isset($field["multiple"]) && $field["multiple"] === true ? "multi" : "single"); ?>" id="<?php echo $idbase; ?>" name="<?php echo htmlspecialchars($field["name"]) . (isset($field["multiple"]) && $field["multiple"] === true ? "[]" : ""); ?>"<?php if (isset($field["multiple"]) && $field["multiple"] === true)  echo " multiple"; ?><?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?><?php echo $styleheight; ?>>
 <?php
 							foreach ($field["options"] as $name => $value)
 							{
@@ -862,17 +864,15 @@
 					}
 					case "textarea":
 					{
-						if (!isset($field["width"]) && !isset($field["height"]))  $style = "";
-						else
-						{
-							$style = array();
-							if (isset($field["width"]))  $style[] = ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]);
-							if (isset($field["height"]))  $style[] = "height: " . htmlspecialchars($field["height"]);
-							$style = " style=\"" . implode("; ", $style) . ";\"";
-						}
+						if (isset($field["width"]))  $stylewidth = " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . ";\"";
+						else  $stylewidth = "";
+
+						if (isset($field["height"]))  $styleheight = " style=\"height: " . htmlspecialchars($field["height"]) . ";\"";
+						else  $styleheight = "";
+
 ?>
 			<div class="formitemdata">
-				<div class="textareawrap"><textarea class="text"<?php echo $style; ?> id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" rows="5" cols="50"<?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?>><?php echo htmlspecialchars($field["value"]); ?></textarea></div>
+				<div class="textareawrap"<?php echo $stylewidth; ?>><textarea class="text"<?php echo $styleheight; ?> id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]); ?>" rows="5" cols="50"<?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?>><?php echo htmlspecialchars($field["value"]); ?></textarea></div>
 			</div>
 <?php
 						break;
@@ -887,7 +887,7 @@
 						if ($this->state["formtables"])
 						{
 ?>
-				<table id="<?php echo htmlspecialchars($idbase); ?>"<?php if (isset($field["class"]))  echo " class=\"" . htmlspecialchars($field["class"]) . "\""; ?><?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>>
+				<table id="<?php echo htmlspecialchars($idbase); ?>" class="formitemtable<?php if (isset($field["class"]))  echo " " . htmlspecialchars($field["class"]); ?>"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>>
 					<thead>
 <?php
 							// Let form handlers process the columns.
@@ -905,7 +905,7 @@
 							foreach ($field["cols"] as $num2 => $col)
 							{
 ?>
-						<th<?php foreach ($colattrs[$num2] as $key => $val)  echo " " . $key . "=\"" . htmlspecialchars($val) . "\""; ?>><?php echo htmlspecialchars(self::FFTranslate($col)); ?></th>
+						<th<?php foreach ($colattrs[$num2] as $key => $val)  echo " " . $key . "=\"" . htmlspecialchars($val) . "\""; ?>><?php echo (isset($field["htmlcols"]) && $field["htmlcols"] ? self::FFTranslate($col) : htmlspecialchars(self::FFTranslate($col))); ?></th>
 <?php
 							}
 ?>
@@ -918,7 +918,7 @@
 
 							$rownum = 0;
 							$altrow = false;
-							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 							while (count($field["rows"]))
 							{
 								foreach ($field["rows"] as $row)
@@ -950,7 +950,7 @@
 									$altrow = !$altrow;
 								}
 
-								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 								else  $field["rows"] = array();
 							}
 ?>
@@ -961,7 +961,7 @@
 						else
 						{
 ?>
-				<div class="nontablewrap" id="<?php echo htmlspecialchars($idbase); ?>">
+				<div class="nontablewrap" id="<?php echo htmlspecialchars($idbase); ?>"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>>
 <?php
 							// Let form handlers process the columns.
 							$trattrs = array();
@@ -981,7 +981,7 @@
 
 							$rownum = 0;
 							$altrow = false;
-							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 							while (count($field["rows"]))
 							{
 								foreach ($field["rows"] as $row)
@@ -1001,7 +1001,7 @@
 									foreach ($row as $col)
 									{
 ?>
-						<div<?php foreach ($headcolattrs as $key => $val)  echo " " . $key . "=\"" . htmlspecialchars($val) . "\""; ?>><?php echo htmlspecialchars(self::FFTranslate(isset($field["cols"][$num2]) ? $field["cols"][$num2] : "")); ?></div>
+						<div<?php foreach ($headcolattrs as $key => $val)  echo " " . $key . "=\"" . htmlspecialchars($val) . "\""; ?>><?php echo (isset($field["htmlcols"]) && $field["htmlcols"] ? self::FFTranslate(isset($field["cols"][$num2]) ? $field["cols"][$num2] : "") : htmlspecialchars(self::FFTranslate(isset($field["cols"][$num2]) ? $field["cols"][$num2] : ""))); ?></div>
 						<div<?php if (isset($colattrs2[$num2]))  { foreach ($colattrs2[$num2] as $key => $val)  echo " " . $key . "=\"" . htmlspecialchars($val) . "\""; } ?>><?php echo $col; ?></div>
 <?php
 										$num2++;
@@ -1012,7 +1012,7 @@
 									$altrow = !$altrow;
 								}
 
-								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 								else  $field["rows"] = array();
 							}
 ?>
@@ -1029,7 +1029,7 @@
 					{
 ?>
 			<div class="formitemdata">
-				<div class="textitemwrap"><input class="text" type="file" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]) . (isset($field["multiple"]) && $field["multiple"] === true ? "[]" : ""); ?>"<?php if (isset($field["multiple"]) && $field["multiple"] === true)  echo " multiple";?><?php if (isset($field["accept"]) && is_string($field["accept"]))  echo " accept=\"" . htmlspecialchars($field["accept"]) . "\"";?><?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> /></div>
+				<div class="textitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>><input class="text" type="file" id="<?php echo htmlspecialchars($id); ?>" name="<?php echo htmlspecialchars($field["name"]) . (isset($field["multiple"]) && $field["multiple"] === true ? "[]" : ""); ?>"<?php if (isset($field["multiple"]) && $field["multiple"] === true)  echo " multiple";?><?php if (isset($field["accept"]) && is_string($field["accept"]))  echo " accept=\"" . htmlspecialchars($field["accept"]) . "\"";?><?php if ($this->state["autofocused"] === $id)  echo " autofocus"; ?> /></div>
 			</div>
 <?php
 						break;
@@ -1038,9 +1038,11 @@
 					{
 ?>
 			<div class="formitemdata">
+				<div id="<?php echo htmlspecialchars($id); ?>" class="customitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>>
 <?php
 						echo $field["value"];
 ?>
+				</div>
 			</div>
 <?php
 						break;
@@ -1082,7 +1084,7 @@
 				if ($this->state["responsive"] && $this->state["insiderowwidth"])  echo "<td></td>";
 
 ?>
-			</tr></table></div>
+			</tr></tbody></table></div>
 <?php
 			}
 
@@ -1115,12 +1117,14 @@
 <?php
 		}
 
-		protected function Finalize()
+		public function OutputFlexFormsJS($scripttag = true)
 		{
-			// Output FlexForms Javascript.  External dependencies are not allowed here.
+			if ($scripttag)  echo "<script type=\"text/javascript\">\n";
+
 ?>
-<script type="text/javascript">
 window.FlexForms = window.FlexForms || {
+	version: '<?php echo self::JSSafe($this->version); ?>',
+
 	modules: {},
 
 	Extend: function(target, src) {
@@ -1133,6 +1137,8 @@ window.FlexForms = window.FlexForms || {
 		var $this = this;
 
 		if ($this.cssoutput[name] !== undefined)  return;
+
+		if ($this.version !== '')  url += (url.indexOf('?') > -1 ? '&' : '?') + $this.version;
 
 		if (document.createStyleSheet)
 		{
@@ -1165,11 +1171,11 @@ window.FlexForms = window.FlexForms || {
 		$this.jsqueue[name].retriesleft = $this.jsqueue[name].retriesleft || 3;
 
 		s.onload = function() {
-			if (!done)  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue(); }
+			if (!done)  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue.call(window.FlexForms); }
 		};
 
 		s.onreadystatechange = function() {
-			if (!done && s.readyState === 'complete')  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue(); }
+			if (!done && s.readyState === 'complete')  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue.call(window.FlexForms); }
 		};
 
 		s.onerror = function() {
@@ -1182,17 +1188,30 @@ window.FlexForms = window.FlexForms || {
 				{
 					$this.jsqueue[name].loading = false;
 
-					setTimeout($this.ProcessJSQueue, 250);
+					setTimeout(function() { $this.ProcessJSQueue.call(window.FlexForms) }, 250);
 				}
 			}
 		};
 
-		s.src = $this.jsqueue[name].src;
+		s.src = $this.jsqueue[name].src + ($this.version === '' ? '' : ($this.jsqueue[name].src.indexOf('?') > -1 ? '&' : '?') + $this.version);
 
 		document.body.appendChild(s);
 	},
 
 	ready: false,
+
+	GetObjectFromPath: function(path) {
+		var obj = window;
+		path = path.split('.');
+		for (var x = 0; x < path.length; x++)
+		{
+			if (obj[path[x]] === undefined)  return;
+
+			obj = obj[path[x]];
+		}
+
+		return obj;
+	},
 
 	ProcessJSQueue: function() {
 		var $this = this;
@@ -1202,9 +1221,9 @@ window.FlexForms = window.FlexForms || {
 		for (var name in $this.jsqueue) {
 			if ($this.jsqueue.hasOwnProperty(name))
 			{
-				if ($this.jsqueue[name].loading === false && ($this.jsqueue[name].dependency === false || $this.jsqueue[$this.jsqueue[name].dependency] === undefined))
+				if (($this.jsqueue[name].loading === undefined || $this.jsqueue[name].loading === false) && ($this.jsqueue[name].dependency === false || $this.jsqueue[$this.jsqueue[name].dependency] === undefined))
 				{
-					if ($this.jsqueue[name].detect !== undefined && $this.jsqueue[name].detect())  delete $this.jsqueue[name];
+					if ($this.jsqueue[name].detect !== undefined && $this.GetObjectFromPath($this.jsqueue[name].detect) !== undefined)  delete $this.jsqueue[name];
 					else if ($this.jsqueue[name].mode === "src")  $this.LoadJSQueueItem(name);
 					else if ($this.jsqueue[name].mode === "inline")
 					{
@@ -1222,7 +1241,7 @@ window.FlexForms = window.FlexForms || {
 	Init: function() {
 		var $this = this;
 
-		if ($this.ready)  $this.ProcessJSQueue();
+		if ($this.ready)  $this.ProcessJSQueue.call(window.FlexForms);
 		else if (!$this.initialized)
 		{
 			if (document.addEventListener)
@@ -1230,22 +1249,28 @@ window.FlexForms = window.FlexForms || {
 				function regevent(event) {
 					document.removeEventListener("DOMContentLoaded", regevent, false);
 
-					$this.ProcessJSQueue();
+					$this.ProcessJSQueue.call(window.FlexForms);
 				}
 
 				document.addEventListener("DOMContentLoaded", regevent);
 			}
 			else
 			{
-				setTimeout($this.ProcessJSQueue, 250);
+				setTimeout(function() { $this.ProcessJSQueue.call(window.FlexForms) }, 250);
 			}
 
 			$this.initialized = true;
 		}
 	}
 };
-</script>
 <?php
+			if ($scripttag)  echo "</script>\n";
+		}
+
+		protected function Finalize()
+		{
+			// Output FlexForms Javascript.  External dependencies are not allowed here.
+			$this->OutputFlexFormsJS(!$this->state["ajax"]);
 
 			// Queue up jQuery and jQuery UI.  Even though these are added last, they end up being output first.
 			$this->OutputJQuery(true);
@@ -1267,7 +1292,7 @@ window.FlexForms = window.FlexForms || {
 						if ($this->state["ajax"])  echo "FlexForms.LoadCSS('" . self::JSSafe($info["src"]) . "'" . (isset($info["media"]) ? ", '" . self::JSSafe($info["media"]) . "'" : "") . ");\n";
 						else
 						{
-							echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($info["src"]) . "\" type=\"text/css\" media=\"" . (isset($info["media"]) ? $info["media"] : "all") . "\" />\n";
+							echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($info["src"] . ($this->version !== "" ? (strpos($info["src"], "?") === false ? "?" : "&") . $this->version : "")) . "\" type=\"text/css\" media=\"" . (isset($info["media"]) ? $info["media"] : "all") . "\" />\n";
 
 							$this->state["cssoutput"][$name] = true;
 						}
@@ -1302,8 +1327,10 @@ window.FlexForms = window.FlexForms || {
 					{
 						if ($info["mode"] === "src")
 						{
+							$info["loading"] = false;
+
 							if ($this->state["ajax"])  echo "FlexForms.jsqueue['" . self::JSSafe($name) . "'] = " . json_encode($info, JSON_UNESCAPED_SLASHES) . ";\n";
-							else  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars($info["src"]) . "\"></script>\n";
+							else  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars($info["src"] . ($this->version !== "" ? (strpos($info["src"], "?") === false ? "?" : "&") . $this->version : "")) . "\"></script>\n";
 						}
 						else if ($info["mode"] === "inline")
 						{
