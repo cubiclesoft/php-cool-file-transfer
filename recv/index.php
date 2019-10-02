@@ -191,8 +191,6 @@
 			}
 		}
 
-fwrite($debugfp, time() . " - DONE\n");
-
 		// Remove the file from the transfer list.
 		try
 		{
