@@ -1,5 +1,5 @@
 // jQuery plugin to display a custom jQuery File Uploader interface.
-// (C) 2019 CubicleSoft.  All Rights Reserved.
+// (C) 2020 CubicleSoft.  All Rights Reserved.
 
 (function($) {
 	var EscapeHTML = function(text) {
@@ -111,6 +111,8 @@
 				data.form.find('input[type=file]').fileupload('destroy');
 				data.form.remove();
 				data.fileuploadwrap.remove();
+
+				$this.removeData('fancy-fileupload');
 			}
 		});
 
@@ -622,6 +624,10 @@
 
 									fileinput.fileupload('add', { files: [blob] });
 
+									stream.getTracks().forEach(function(track) {
+										track.stop();
+									});
+
 									audiobutton.removeClass('ff_fileupload_recording');
 									audiochunks = [];
 									audiorec = null;
@@ -671,6 +677,10 @@
 									blob.name = FormatStr(Translate('Video recording - {0}.mp4'), blob.lastModifiedDate.toLocaleString());
 
 									fileinput.fileupload('add', { files: [blob] });
+
+									stream.getTracks().forEach(function(track) {
+										track.stop();
+									});
 
 									videobutton.removeClass('ff_fileupload_recording');
 									videorecpreview.addClass('ff_fileupload_hidden');
