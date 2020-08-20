@@ -71,7 +71,7 @@ Once Cool File Transfer is installed, secure the installation path and then star
 ?>
 <div class="fileuploadwrap"><input class="text" type="file" id="uploader" name="file" /></div>
 
-<script type="text/javascript" src="/cool-file-transfer/support/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="/cool-file-transfer/support/jquery-3.5.0.min.js"></script>
 
 <link rel="stylesheet" href="/cool-file-transfer/support/fancy-file-uploader/fancy_fileupload.css" type="text/css" media="all" />
 <script type="text/javascript" src="/cool-file-transfer/support/fancy-file-uploader/jquery.ui.widget.js"></script>
