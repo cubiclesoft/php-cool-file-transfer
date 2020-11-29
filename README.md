@@ -9,7 +9,7 @@ Your PC, tablet, smartphone, refridgerator, and IT department thank you for choo
 
 [![Awesome demo of Cool File Transfer](https://user-images.githubusercontent.com/1432111/29055577-1d21076c-7bb2-11e7-86bd-a46b825ecf27.png)](https://www.youtube.com/watch?v=haWIVLhefnA "Awesome demo of Cool File Transfer")
 
-[![Donate](https://cubiclesoft.com/res/donate-shield.png)](https://cubiclesoft.com/donate/)
+[![Donate](https://cubiclesoft.com/res/donate-shield.png)](https://cubiclesoft.com/donate/) [![Discord](https://img.shields.io/discord/777282089980526602?label=chat&logo=discord)](https://cubiclesoft.com/product-support/github/)
 
 Features
 --------
